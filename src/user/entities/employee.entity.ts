@@ -1,9 +1,10 @@
 import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
+import { EmployeType } from '../enums/employee-type.enum';
 import { User } from './user.entity';
 
 @Entity()
 export class Employee {
-  @PrimaryColumn({ type: 'text', name: 'userId' })
+  @PrimaryColumn({ type: 'text', name: 'id' })
   @OneToOne(() => User, {
     nullable: false,
     onUpdate: 'CASCADE',
@@ -14,9 +15,9 @@ export class Employee {
 
   // we use a type attribute, because it is disjoint
   @Column({ type: 'smallint' })
-  type: number;
+  type: EmployeType;
 
-  @Column({ type: 'float64' })
+  @Column({ type: 'float' })
   salary: number;
 
   @Column({ type: 'text', unique: true })

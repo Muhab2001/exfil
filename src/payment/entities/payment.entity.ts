@@ -1,3 +1,4 @@
+import { DeliveryOrder } from 'src/package/entities/delivery_order.entity';
 import { Package } from 'src/package/entities/package.entity';
 import { Customer } from 'src/user/entities/customer.entity';
 import {
@@ -7,6 +8,7 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -15,7 +17,7 @@ export class Payment {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'float64' })
+  @Column({ type: 'float' })
   amount: number;
 
   @CreateDateColumn()
@@ -24,17 +26,21 @@ export class Payment {
   @Column({ type: 'datetime', nullable: true })
   process_date: string;
 
+  // 0: payment is pending, 1: payment if fulfilled
   @Column({ type: 'smallint' })
-  isProcessed: number;
+  fulfilled: number;
 
   @ManyToOne(() => Customer, { nullable: false })
-  @JoinColumn({ name: 'customer_id', referencedColumnName: 'id' })
+  @JoinColumn({ name: 'customer_id' })
   customer: Customer;
 
-  @OneToMany(() => Package, (pkg) => pkg.payment, {
-    lazy: true,
-    cascade: true,
-    nullable: false,
-  })
-  packages: Promise<Package[]>;
+  // @OneToMany(() => Package, (pkg) => pkg.payment, {
+  //   lazy: true,
+  //   cascade: true,
+  //   nullable: false,
+  // })
+  // packages: Promise<Package[]>;
+
+  @OneToOne(() => DeliveryOrder, (order) => order.payment, { lazy: true })
+  order: Promise<DeliveryOrder>;
 }
