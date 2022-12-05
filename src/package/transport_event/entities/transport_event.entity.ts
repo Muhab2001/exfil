@@ -1,4 +1,5 @@
-import { Column, Entity, JoinTable, ManyToMany, PrimaryColumn } from 'typeorm';
+import { PackageLocation } from 'src/package/entities/package-location.entity';
+import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 
 @Entity()
 export class TransportEvent {
@@ -8,9 +9,8 @@ export class TransportEvent {
   @Column({ type: 'int', nullable: false })
   type: number; //TODO: replace with an enum
 
-  @ManyToMany(() => Location, {
+  @OneToMany(() => PackageLocation, (location) => location.transport_event, {
     lazy: true,
   })
-  @JoinTable()
-  delviery_route: Promise<Location[]>;
+  delivery_route: Promise<Location[]>;
 }

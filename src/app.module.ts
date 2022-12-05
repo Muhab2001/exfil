@@ -22,7 +22,6 @@ import { ConfigModule } from '@nestjs/config';
       database: 'db/database.sqlite',
       synchronize: true,
       autoLoadEntities: true,
-      migrations: [],
       logging: ['error', 'schema'],
     }),
   ],

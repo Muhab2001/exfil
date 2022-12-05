@@ -1,7 +1,14 @@
 import { Address } from 'src/address/entities/address.entity';
-import { RetailEmployee } from 'src/user/entities/retail_employee.entity';
-import { Column, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { RetailEmployee } from 'src/user/entities/retail-employee.entity';
+import {
+  Column,
+  Entity,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
+@Entity()
 export class RetailCenter {
   @PrimaryGeneratedColumn()
   id: number;

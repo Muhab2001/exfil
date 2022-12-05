@@ -8,7 +8,7 @@ export class User {
   @Column({ type: 'text' })
   Fname: string;
 
-  @Column({ type: 'char', length: '1' })
+  @Column({ type: 'varchar', length: '1' })
   Minit: string;
 
   @Column({ type: 'text' })
