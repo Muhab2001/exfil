@@ -9,10 +9,11 @@ import { RetailCenter } from './retail_center/entities/retail_center.entity';
 import { Package } from './entities/package.entity';
 import { PackageLocation } from './entities/package-location.entity';
 import { ReportController } from './report.controller';
+import { OrderService } from './order.service';
 
 @Module({
   controllers: [PackageController, ReportController],
-  providers: [PackageService],
+  providers: [PackageService, OrderService],
   imports: [
     TransportEventModule,
     RetailCenterModule,
@@ -24,6 +25,6 @@ import { ReportController } from './report.controller';
       PackageLocation,
     ]),
   ],
-  exports: [PackageService],
+  exports: [PackageService, OrderService],
 })
 export class PackageModule {}
