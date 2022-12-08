@@ -20,14 +20,14 @@ export class Payment {
   @Column({ type: 'float' })
   amount: number;
 
-  @CreateDateColumn()
-  issue_date: Date;
+  @CreateDateColumn({ type: 'datetime', nullable: false })
+  issue_date: string;
 
   @Column({ type: 'datetime', nullable: true })
   process_date: string;
 
   // 0: payment is pending, 1: payment if fulfilled
-  @Column({ type: 'smallint' })
+  @Column({ type: 'smallint', default: 0 })
   fulfilled: number;
 
   @ManyToOne(() => Customer, { nullable: false })
@@ -41,6 +41,10 @@ export class Payment {
   // })
   // packages: Promise<Package[]>;
 
-  @OneToOne(() => DeliveryOrder, (order) => order.payment, { lazy: true })
+  @OneToOne(() => DeliveryOrder, (order) => order.payment, {
+    lazy: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   order: Promise<DeliveryOrder>;
 }

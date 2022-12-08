@@ -35,7 +35,7 @@ export class DeliveryOrder {
   @JoinColumn()
   transport_event: TransportEvent[];
 
-  @OneToOne(() => Payment, { nullable: false, eager: true })
+  @OneToOne(() => Payment, { nullable: false, eager: true, cascade: true })
   @JoinColumn()
   payment: Payment;
 }
