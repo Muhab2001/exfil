@@ -8,6 +8,7 @@ export abstract class Customer {
     nullable: false,
     onUpdate: 'CASCADE',
     onDelete: 'CASCADE',
+    cascade: true,
   })
   @JoinColumn()
   user: User;

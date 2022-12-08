@@ -7,16 +7,19 @@ import { Customer } from './entities/customer.entity';
 import { DeliveryEmployee } from './entities/delivery-employee.entity';
 import { RetailEmployee } from './entities/retail-employee.entity';
 import { User } from './entities/user.entity';
+import { ConfigModule } from '@nestjs/config';
+import { Admin } from './entities/admin.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       User,
-      Employee,
       Customer,
+      Admin,
       DeliveryEmployee,
       RetailEmployee,
     ]),
+    ConfigModule,
   ],
   controllers: [UserController],
   providers: [UserService],

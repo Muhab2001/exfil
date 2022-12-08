@@ -7,8 +7,10 @@ export abstract class Employee {
   @PrimaryColumn({ type: 'text', name: 'id' })
   @OneToOne(() => User, {
     nullable: false,
+    eager: true,
     onUpdate: 'CASCADE',
     onDelete: 'CASCADE',
+    cascade: true,
   })
   @JoinColumn()
   user: User;

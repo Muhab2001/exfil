@@ -11,6 +11,7 @@ import {
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { PackageCategory } from '../enums/package-category.enum';
 import { DeliveryOrder } from './delivery_order.entity';
@@ -54,6 +55,9 @@ export class Package {
 
   @Column({ type: 'smallint', nullable: false })
   category: PackageCategory; // convert to an enum type
+
+  @UpdateDateColumn({ type: 'datetime' })
+  lastUpdated: string;
 
   @ManyToOne(() => Customer, { nullable: false })
   @JoinColumn({ name: 'customerId' })
