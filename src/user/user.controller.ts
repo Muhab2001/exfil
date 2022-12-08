@@ -20,23 +20,67 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
-  @Get()
-  findAll() {
-    return this.userService.findAll();
+  @Get('customers')
+  findAllCustomers() {
+    return this.userService.findAllCustomers();
+  }
+
+  @Get('retail-employees')
+  findAllRetailEmployees() {
+    return this.userService.findAllRetailEmployees();
+  }
+
+  @Get('delivery-employees')
+  findAllDeliveryEmployees() {
+    return this.userService.findAllDeliveryEmployees();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+  findOneUser(@Param('id') id: string) {
+    return this.userService.findOneUserById(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+  @Get('customer/:id')
+  findOneCustomer(@Param('id') id: string) {
+    return this.userService.findOneCustomer(id);
+  }
+
+  @Get('retail-employee/:id')
+  findOneRetailEmployee(@Param('id') id: string) {
+    return this.userService.findOneRetailEmployee(id);
+  }
+
+  @Get('delivery-employee/:id')
+  findOneDeliveryEmployee(@Param('id') id: string) {
+    return this.userService.findOneDeliveryEmployee(id);
+  }
+
+  @Patch('customer/:id')
+  updateCustomer(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return this.userService.updateCustomer(id, updateUserDto);
+  }
+
+  @Patch('delivery-employee/:id')
+  updateDeliveryEmployee(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return this.userService.updateDeliverEmployee(id, updateUserDto);
+  }
+
+  @Patch('retail-employee/:id')
+  updateRetailEmployee(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return this.userService.updateRetailEmployee(id, updateUserDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+    return this.userService.remove(id);
   }
 }
