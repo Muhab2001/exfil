@@ -31,9 +31,9 @@ export class DeliveryOrder {
   @OneToMany(() => Package, (pkg) => pkg.order, { lazy: true })
   packages: Promise<Package[]>;
 
-  @OneToOne(() => TransportEvent, { nullable: false })
+  @OneToMany(() => TransportEvent, (event) => event.order, { nullable: false })
   @JoinColumn()
-  event: TransportEvent;
+  transport_event: TransportEvent[];
 
   @OneToOne(() => Payment, { nullable: false, eager: true })
   @JoinColumn()

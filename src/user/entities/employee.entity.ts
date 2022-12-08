@@ -3,7 +3,7 @@ import { EmployeType } from '../enums/employee-type.enum';
 import { User } from './user.entity';
 
 @Entity()
-export class Employee {
+export abstract class Employee {
   @PrimaryColumn({ type: 'text', name: 'id' })
   @OneToOne(() => User, {
     nullable: false,
@@ -12,10 +12,6 @@ export class Employee {
   })
   @JoinColumn()
   user: User;
-
-  // we use a type attribute, because it is disjoint
-  @Column({ type: 'smallint' })
-  type: EmployeType;
 
   @Column({ type: 'float' })
   salary: number;

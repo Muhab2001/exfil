@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { PackageService } from './package.service';
 import { CreatePackageDto } from './dto/create-package.dto';
 import { UpdatePackageDto } from './dto/update-package.dto';
@@ -20,6 +28,11 @@ export class PackageController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.packageService.findOne(+id);
+  }
+
+  @Get(':id/locations')
+  findOneLocations(@Param('id') id: string) {
+    // return this.packageService.findOne(+id);
   }
 
   @Patch(':id')
