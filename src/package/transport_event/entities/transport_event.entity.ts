@@ -1,5 +1,6 @@
+import { DeliveryOrder } from 'src/package/entities/delivery_order.entity';
 import { PackageLocation } from 'src/package/entities/package-location.entity';
-import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
 
 @Entity()
 export class TransportEvent {
@@ -13,4 +14,9 @@ export class TransportEvent {
     lazy: true,
   })
   delivery_route: Promise<Location[]>;
+
+  @ManyToOne(() => DeliveryOrder, (order) => order.transport_event, {
+    nullable: false,
+  })
+  order: DeliveryOrder;
 }

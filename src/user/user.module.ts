@@ -7,7 +7,6 @@ import { Customer } from './entities/customer.entity';
 import { DeliveryEmployee } from './entities/delivery-employee.entity';
 import { RetailEmployee } from './entities/retail-employee.entity';
 import { User } from './entities/user.entity';
-import { DeliveryOrder } from 'src/package/entities/delivery_order.entity';
 
 @Module({
   imports: [
@@ -21,5 +20,6 @@ import { DeliveryOrder } from 'src/package/entities/delivery_order.entity';
   ],
   controllers: [UserController],
   providers: [UserService],
+  exports: [UserService],
 })
 export class UserModule {}

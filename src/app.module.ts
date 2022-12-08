@@ -4,10 +4,11 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { PackageModule } from './package/package.module';
 import { PaymentModule } from './payment/payment.module';
-import { AuthModule } from './auth/auth.module';
+
 import { AddressModule } from './address/address.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -23,6 +24,9 @@ import { ConfigModule } from '@nestjs/config';
       synchronize: true,
       autoLoadEntities: true,
       logging: ['error', 'schema'],
+    }),
+    ConfigModule.forRoot({
+      isGlobal: true,
     }),
   ],
   controllers: [AppController],
