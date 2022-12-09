@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { OrderService } from 'src/package/order.service';
+import { OrderService } from 'src/package/orders/order.service';
 import { UserService } from 'src/user/user.service';
 import { Between, MoreThanOrEqual, Repository } from 'typeorm';
 import { CreatePaymentDto } from './dto/create-payment.dto';

@@ -3,6 +3,7 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   OneToOne,
@@ -16,14 +17,8 @@ export class PackageLocation {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true, nullable: false, type: 'text' })
-  name: string;
-
-  @Column({ nullable: false, type: 'text' })
-  country: string;
-
-  @Column({ type: 'datetime' })
-  timestamp: string;
+  @Column({ type: 'datetime', nullable: true })
+  delivery_timestamp: string;
 
   @Column({ type: 'smallint' })
   type: PackageLocation;
@@ -32,10 +27,12 @@ export class PackageLocation {
   @JoinColumn()
   address: Address;
   // many packages can be at the same location together, and one package will go through multiple locations
-  @ManyToOne(() => Package, (pkg) => pkg.current_location, {
+  @ManyToMany(() => Package, (pkg) => pkg.current_location, {
     lazy: true,
     nullable: true,
     cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   packages: Promise<Package[]>;
 

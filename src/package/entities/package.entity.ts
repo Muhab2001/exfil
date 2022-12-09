@@ -4,6 +4,7 @@ import { RetailEmployee } from 'src/user/entities/retail-employee.entity';
 import {
   Check,
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   JoinTable,
@@ -47,7 +48,7 @@ export class Package {
   @Column({ type: 'datetime', nullable: true })
   delivery_date: string;
 
-  @Column({ type: 'datetime', nullable: true })
+  @CreateDateColumn({ type: 'datetime', nullable: true })
   entry_timestamp: string;
 
   @Column({ type: 'smallint', nullable: false })
@@ -70,10 +71,11 @@ export class Package {
   @ManyToOne(() => RetailEmployee, (emp) => emp.packages, { eager: true })
   retail_employee: RetailEmployee;
 
-  @ManyToOne(() => PackageLocation, (lctn) => lctn.packages, {
+  @ManyToOne(() => PackageLocation, {
     nullable: false,
     eager: true,
   })
+  @JoinColumn()
   current_location: PackageLocation;
 
   @ManyToMany(() => PackageLocation, { nullable: false })

@@ -8,12 +8,14 @@ import { DeliveryOrder } from './entities/delivery_order.entity';
 import { RetailCenter } from './retail_center/entities/retail_center.entity';
 import { Package } from './entities/package.entity';
 import { PackageLocation } from './entities/package-location.entity';
-import { ReportController } from './report.controller';
-import { OrderService } from './order.service';
+import { ReportController } from './reports/report.controller';
+import { OrderService } from './orders/order.service';
+import { ReportService } from './reports/report.service';
+import { ReportsGateway } from './reports/reports.gateway';
 
 @Module({
   controllers: [PackageController, ReportController],
-  providers: [PackageService, OrderService],
+  providers: [PackageService, OrderService, ReportService, ReportsGateway],
   imports: [
     TransportEventModule,
     RetailCenterModule,
