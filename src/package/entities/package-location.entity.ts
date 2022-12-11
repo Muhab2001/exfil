@@ -9,6 +9,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { PackageLocationType } from '../enums/package-location.enum';
 import { TransportEvent } from '../transport_event/entities/transport_event.entity';
 import { Package } from './package.entity';
 
@@ -18,10 +19,10 @@ export class PackageLocation {
   id: number;
 
   @Column({ type: 'datetime', nullable: true })
-  delivery_timestamp: string;
+  timestamp: string;
 
   @Column({ type: 'smallint' })
-  type: PackageLocation;
+  type: PackageLocationType;
   // one location has one address only
   @OneToOne(() => Address, { nullable: false })
   @JoinColumn()

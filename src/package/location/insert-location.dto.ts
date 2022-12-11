@@ -9,12 +9,12 @@ import {
 } from 'class-validator';
 import { Address } from 'cluster';
 import { Package } from '../entities/package.entity';
-import { PackageLocation } from '../enums/package-location.enum';
+import { PackageLocationType } from '../enums/package-location.enum';
 
 export class LocationDto {
   @IsNotEmpty()
-  @IsEnum(PackageLocation)
-  type: PackageLocation;
+  @IsEnum(PackageLocationType)
+  type: PackageLocationType;
   @IsNotEmpty()
   @IsInt()
   address_id: number;

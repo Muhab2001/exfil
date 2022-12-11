@@ -1,4 +1,11 @@
-import { IsInt, IsISO8601, IsNotEmpty, IsOptional } from 'class-validator';
+import {
+  ArrayNotEmpty,
+  IsArray,
+  IsInt,
+  IsISO8601,
+  IsNotEmpty,
+  IsOptional,
+} from 'class-validator';
 
 export class FetchReportDto {
   @IsISO8601()
@@ -8,6 +15,7 @@ export class FetchReportDto {
   @IsNotEmpty()
   to: string;
   @IsOptional()
-  @IsInt()
-  location_id?: number;
+  @IsArray()
+  @ArrayNotEmpty()
+  location_ids?: number[];
 }

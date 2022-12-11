@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Equal, Repository } from 'typeorm';
+import { Equal, ILike, In, Like, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Customer } from './entities/customer.entity';
@@ -11,6 +11,7 @@ import { hash } from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { Role } from 'src/auth/role.enum';
 import { Admin } from './entities/admin.entity';
+import { GetUserDto } from './dto/get-user.dto';
 @Injectable()
 export class UserService {
   constructor(
@@ -19,7 +20,7 @@ export class UserService {
     @InjectRepository(DeliveryEmployee)
     private deliveryEmployeeRepo: Repository<DeliveryEmployee>,
     @InjectRepository(RetailEmployee)
-    private retailEmployee: Repository<RetailEmployee>,
+    private retailEmployeeRepo: Repository<RetailEmployee>,
     @InjectRepository(Customer)
     private customerRepo: Repository<Customer>,
     @InjectRepository(Admin)
@@ -77,16 +78,46 @@ export class UserService {
     }
   }
 
-  async findAllCustomers() {
-    return await this.customerRepo.findBy({});
+  // async findAllUsers(findOptions: GetUserDto) {
+  //   return [
+  //     ...(await this.findAllDeliveryEmployees()),
+  //     ...(await this.findAllRetailEmployees()),
+  //     ...(await this.findAllCustomers()),
+  //   ];
+  // }
+
+  async findAllCustomers(GetUserDto: GetUserDto) {
+    if (!GetUserDto.username) return await this.customerRepo.findBy({});
+    else {
+      const users = await this.userRepository.findBy({
+        username: ILike('%' + GetUserDto.username + '%'),
+      });
+      return await this.customerRepo.findBy({ user: In(users) });
+    }
   }
 
-  async findAllDeliveryEmployees() {
-    return await this.deliveryEmployeeRepo.findBy({});
+  async findAllDeliveryEmployees(GetUserDto: GetUserDto) {
+    if (!GetUserDto.username) return await this.deliveryEmployeeRepo.findBy({});
+    else {
+      const users = await this.userRepository.findBy({
+        username: Like(GetUserDto.username),
+      });
+      return await this.deliveryEmployeeRepo.findBy({ user: In(users) });
+    }
   }
 
-  async findAllRetailEmployees() {
-    return await this.retailEmployee.findBy({});
+  async findAllRetailEmployees(GetUserDto: GetUserDto) {
+    if (!GetUserDto.username) return await this.retailEmployeeRepo.findBy({});
+    else {
+      const users = await this.userRepository.findBy({
+        username: Like(GetUserDto.username),
+      });
+      return await this.retailEmployeeRepo.findBy({ user: In(users) });
+    }
+  }
+
+  async findAllAdmins() {
+    return await this.adminRepo.findBy({});
   }
 
   async findOneUserById(id: string) {
@@ -97,16 +128,18 @@ export class UserService {
     return await this.userRepository.findOneBy({ username: username });
   }
 
-  async findOneCustomer(id: string) {
-    return await this.customerRepo.findOneByOrFail({ user: Equal(id) });
+  async findOneCustomer(email: string) {
+    return await this.customerRepo.findOneByOrFail({ email: email });
   }
 
-  async findOneDeliveryEmployee(id: string) {
-    return await this.deliveryEmployeeRepo.findOneByOrFail({ user: Equal(id) });
+  async findOneDeliveryEmployee(email: string) {
+    return await this.deliveryEmployeeRepo.findOneByOrFail({
+      company_email: email,
+    });
   }
 
   async findOneRetailEmployee(id: string) {
-    return await this.retailEmployee.findOneByOrFail({ user: Equal(id) });
+    return await this.retailEmployeeRepo.findOneByOrFail({ user: Equal(id) });
   }
 
   async updateCustomer(inputId: string, updateUserDto: UpdateUserDto) {
@@ -118,7 +151,7 @@ export class UserService {
   }
 
   async updateRetailEmployee(inputId: string, updateUserDto: UpdateUserDto) {
-    await this.retailEmployee.update(inputId, updateUserDto);
+    await this.retailEmployeeRepo.update(inputId, updateUserDto);
   }
 
   async remove(id: string) {

@@ -15,6 +15,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { PackageCategory } from '../enums/package-category.enum';
+import { PackageStatus } from '../enums/package-status.enum';
 import { DeliveryOrder } from './delivery_order.entity';
 import { PackageLocation } from './package-location.entity';
 
@@ -51,25 +52,14 @@ export class Package {
   @CreateDateColumn({ type: 'datetime', nullable: true })
   entry_timestamp: string;
 
-  @Column({ type: 'smallint', nullable: false })
-  status: string; // convert to an enum type
+  @Column({ type: 'text', nullable: false })
+  status: PackageStatus; // convert to an enum type
 
-  @Column({ type: 'smallint', nullable: false })
+  @Column({ type: 'text', nullable: false })
   category: PackageCategory; // convert to an enum type
 
   @UpdateDateColumn({ type: 'datetime' })
   lastUpdated: string;
-
-  @ManyToOne(() => Customer, { nullable: false })
-  @JoinColumn({ name: 'customerId' })
-  recipient: Customer;
-
-  @ManyToOne(() => Customer, { nullable: false })
-  @JoinColumn({ name: 'customerId' })
-  sender: Customer;
-  //? registered by:
-  @ManyToOne(() => RetailEmployee, (emp) => emp.packages, { eager: true })
-  retail_employee: RetailEmployee;
 
   @ManyToOne(() => PackageLocation, {
     nullable: false,

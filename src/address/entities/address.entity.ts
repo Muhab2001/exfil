@@ -11,6 +11,6 @@ export class Address {
   city: string;
   @Column({ nullable: false, type: 'text' })
   street: string;
-  @Column({ nullable: false, type: 'int' })
-  zip_code: number;
+  @Column({ nullable: false, type: 'text' })
+  zip_code: string;
 }

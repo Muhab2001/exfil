@@ -6,10 +6,12 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { GetUserDto } from './dto/get-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -20,19 +22,24 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
+  // @Get()
+  // findAllUsers(@Query() getUserDto: GetUserDto) {
+  //   return this.userService.findAllUsers(getUserDto);
+  // }
+
   @Get('customers')
-  findAllCustomers() {
-    return this.userService.findAllCustomers();
+  findAllCustomers(@Query() GetUserDto: GetUserDto) {
+    return this.userService.findAllCustomers(GetUserDto);
   }
 
   @Get('retail-employees')
-  findAllRetailEmployees() {
-    return this.userService.findAllRetailEmployees();
+  findAllRetailEmployees(@Query() GetUserDto: GetUserDto) {
+    return this.userService.findAllRetailEmployees(GetUserDto);
   }
 
   @Get('delivery-employees')
-  findAllDeliveryEmployees() {
-    return this.userService.findAllDeliveryEmployees();
+  findAllDeliveryEmployees(@Query() GetUserDto: GetUserDto) {
+    return this.userService.findAllDeliveryEmployees(GetUserDto);
   }
 
   @Get(':id')
