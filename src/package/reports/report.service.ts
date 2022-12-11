@@ -20,9 +20,9 @@ export class ReportService {
       .where('package.entry_timestamp >= :from', { from: findParams.from })
       .andWhere('pacakge.entry_timestamp < :to', { to: findParams.to });
 
-    if (findParams.location_id) {
-      baseQuery = baseQuery.andWhere('current_location = :id', {
-        id: findParams.location_id,
+    if (findParams.location_ids) {
+      baseQuery = baseQuery.andWhere('current_location IN (:...id)', {
+        id: findParams.location_ids,
       });
     }
     const categoryResults = await baseQuery

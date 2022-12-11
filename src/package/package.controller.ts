@@ -10,6 +10,8 @@ import {
 import { PackageService } from './package.service';
 import { CreatePackageDto } from './dto/create-package.dto';
 import { UpdatePackageDto } from './dto/update-package.dto';
+import bodyParser from 'body-parser';
+import { CreateOrderDto } from './dto/create-order.dto';
 
 @Controller('package')
 export class PackageController {
@@ -23,6 +25,11 @@ export class PackageController {
   @Get()
   findAll() {
     return this.packageService.findAll();
+  }
+
+  @Get('orders')
+  findOrders() {
+    return this.packageService.findUserOrders(1);
   }
 
   @Get(':id')

@@ -12,9 +12,13 @@ import { ReportController } from './reports/report.controller';
 import { OrderService } from './orders/order.service';
 import { ReportService } from './reports/report.service';
 import { ReportsGateway } from './reports/reports.gateway';
+import { OrderController } from './orders/order.controller';
+import { UserModule } from 'src/user/user.module';
+import { Payment } from 'src/payment/entities/payment.entity';
+import { Address } from 'src/address/entities/address.entity';
 
 @Module({
-  controllers: [PackageController, ReportController],
+  controllers: [PackageController, ReportController, OrderController],
   providers: [PackageService, OrderService, ReportService, ReportsGateway],
   imports: [
     TransportEventModule,
@@ -24,8 +28,11 @@ import { ReportsGateway } from './reports/reports.gateway';
       DeliveryOrder,
       RetailCenter,
       Package,
+      Address,
+      Payment,
       PackageLocation,
     ]),
+    UserModule,
   ],
   exports: [PackageService, OrderService],
 })

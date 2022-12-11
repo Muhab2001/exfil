@@ -6,7 +6,7 @@ export class User {
   @PrimaryColumn()
   id: string; // the national id
 
-  @Column({ type: 'text', nullable: false })
+  @Column({ type: 'text', nullable: false, unique: true })
   username: string;
 
   // we use a type attribute, because it is disjoint
