@@ -20,10 +20,11 @@ export class TransportEvent {
   @Column({ type: 'text', nullable: false })
   type: EventType; //TODO: replace with an enum
 
-  @OneToMany(() => PackageLocation, (location) => location.transport_event, {
-    lazy: true,
-  })
-  delivery_route: Promise<Location[]>;
+  @OneToOne(() => Location, { nullable: false, eager: true })
+  start_location: Location;
+
+  @OneToOne(() => Location, { nullable: true, eager: true })
+  end_location: Location;
 
   @ManyToOne(() => DeliveryOrder, (order) => order.transport_event, {
     nullable: false,
