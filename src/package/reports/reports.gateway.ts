@@ -42,7 +42,7 @@ export class ReportsGateway
   }
 
   afterInit(server: Server) {
-    console.log(server);
+    // console.log(server);
   }
 
   @SubscribeMessage('fetch')

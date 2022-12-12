@@ -1,28 +1,55 @@
+import { Type } from 'class-transformer';
 import {
   ArrayMinSize,
   IsArray,
   IsEnum,
+  IsAlpha,
   IsIn,
+  IsNumberString,
   IsInt,
   IsNotEmpty,
   IsNumber,
+  IsDateString,
+  IsAlphanumeric,
+  ArrayNotEmpty,
+  ValidateNested,
+  IsString,
+  IsObject,
 } from 'class-validator';
 import { Address } from 'cluster';
 import { Package } from '../entities/package.entity';
 import { PackageLocationType } from '../enums/package-location.enum';
+import { PackageStatus } from '../enums/package-status.enum';
+import { EventType } from '../transport_event/event.enum';
 
+class PackageStatusIndicator {
+  [id: string]: PackageStatus;
+}
 export class LocationDto {
   @IsNotEmpty()
   @IsEnum(PackageLocationType)
-  type: PackageLocationType;
+  locationType: PackageLocationType;
+
+  @IsEnum(EventType)
   @IsNotEmpty()
-  @IsInt()
-  address_id: number;
+  eventType: EventType;
+
   @IsNotEmpty()
-  @IsArray()
-  @ArrayMinSize(1)
-  packages: Package[];
+  @IsAlpha()
+  city: string;
   @IsNotEmpty()
-  @IsInt()
-  event_id: number;
+  @IsAlpha()
+  country: string;
+  @IsNotEmpty()
+  @IsString()
+  street: string;
+
+  @IsNotEmpty()
+  @IsNumberString()
+  zipcode: string;
+
+  @IsNotEmpty()
+  @ValidateNested()
+  @Type(() => PackageStatusIndicator)
+  statuses: PackageStatusIndicator;
 }

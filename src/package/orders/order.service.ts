@@ -29,20 +29,44 @@ export class OrderService {
   ) {}
 
   async findOne(id: number) {
-    return await this.ordersRepo.findOneByOrFail({ id: id });
+    console.log(await this.ordersRepo.findBy({}));
+    return await this.ordersRepo.findOneOrFail({
+      relations: {
+        packages: {
+          package_locations: true,
+        },
+      },
+      where: {
+        id: id,
+      },
+    });
   }
 
-  async createOrder(CreateOrderDto: CreateOrderDto) {
-    const recipient = await this.usersService.findOneCustomer(
-      CreateOrderDto.recipient.email,
+  async save(order: DeliveryOrder) {
+    await this.ordersRepo.save(order);
+  }
+
+  async createOrder(
+    retail_employee_id: string,
+    CreateOrderDto: CreateOrderDto,
+  ) {
+    const recipient = await this.usersService.findOneCustomerByEmail(
+      CreateOrderDto.recipient,
     );
-    const sender = await this.usersService.findOneCustomer(
-      CreateOrderDto.sender.email,
+    const sender = await this.usersService.findOneCustomerByEmail(
+      CreateOrderDto.sender,
     );
 
-    const delivery_employee = await this.usersService.findOneDeliveryEmployee(
-      CreateOrderDto.delivery_employee,
+    const delivery_employee =
+      await this.usersService.findOneDeliveryEmployeeByEmail(
+        CreateOrderDto.delivery_employee,
+      );
+
+    const retail_employee = await this.usersService.findOneRetailEmployee(
+      retail_employee_id,
     );
+
+    const center_location = retail_employee.retail_center.address;
 
     const payment = this.paymentsRepo.create({
       amount: CreateOrderDto.payment,
@@ -51,15 +75,19 @@ export class OrderService {
       customer: sender,
     });
 
-    const currentLocation = this.locationsRepo.create({
+    const currentLocation = await this.locationsRepo.save({
       timestamp: new Date().toLocaleString(),
       type: PackageLocationType.WAREHOUSE,
-      address: await this.addresRepo.save({
-        country: CreateOrderDto.country,
-        city: CreateOrderDto.city,
-        street: CreateOrderDto.street,
-        zip_code: CreateOrderDto.zipcode,
-      }),
+      address: center_location,
+    });
+
+    console.log(currentLocation);
+
+    const final_destination = this.addresRepo.create({
+      country: CreateOrderDto.country,
+      city: CreateOrderDto.city,
+      street: CreateOrderDto.street,
+      zipcode: CreateOrderDto.zipcode,
     });
 
     const packages = CreateOrderDto.packages.map((pkg) => {
@@ -82,21 +110,73 @@ export class OrderService {
       deliveryEmployee: delivery_employee,
       sender: sender,
       recipient: recipient,
-      packages: Promise.resolve(packages),
+      packages: packages,
+      retail_employee: retail_employee,
+      payment: payment,
+      final_destination: final_destination,
     });
     // creates an order
+    const savedOrder = await this.ordersRepo.save(order);
+    console.log(savedOrder);
+
+    return savedOrder;
+
+    // TODO: send email to confirm order creation
   }
 
-  async updateOrder(UpdateOrderDto: UpdateOrderDto) {
+  async updateOrder(order_id: number, UpdateOrderDto: UpdateOrderDto) {
     // updating all non-nested items directly, and then updating the packages
+
+    const existingOrder = await this.ordersRepo.findOneByOrFail({
+      id: order_id,
+    });
+
+    const {
+      delivery_employee: delivery_employee_email,
+      recipient: recipient_email,
+      sender: sender_email,
+      payment: payment_amount,
+      ...otherProps
+    } = UpdateOrderDto;
+
+    const updateOptions = { ...otherProps };
+
+    if (recipient_email)
+      existingOrder.recipient = await this.usersService.findOneCustomerByEmail(
+        recipient_email,
+      );
+    if (sender_email)
+      existingOrder.sender = await this.usersService.findOneCustomerByEmail(
+        sender_email,
+      );
+
+    if (delivery_employee_email)
+      existingOrder.deliveryEmployee =
+        await this.usersService.findOneDeliveryEmployeeByEmail(
+          delivery_employee_email,
+        );
+
+    if (payment_amount) existingOrder.payment.amount = payment_amount;
+
+    await this.ordersRepo.update({ id: existingOrder.id }, existingOrder);
   }
 
-  async findDeliveryOrders(deliveryEmpId: number) {
-    return this.ordersRepo.findBy({ deliveryEmployee: Equal(deliveryEmpId) });
+  async findDeliveryEmployeeOrders(deliveryEmpId: number) {
+    return this.ordersRepo.findBy({
+      deliveryEmployee: Equal(deliveryEmpId),
+      isDelivered: 0,
+    });
+  }
+
+  async findRetailEmployeeOrders(retailEmpId: number) {
+    return this.ordersRepo.findBy({
+      retail_employee: Equal(retailEmpId),
+      isDelivered: 0,
+    });
   }
 
   async findCustomerDeliveryOrder(
-    customerId: number,
+    customerId: string,
     orderSide: 'recipient' | 'sender',
   ) {
     if (orderSide === 'recipient') {
@@ -104,5 +184,9 @@ export class OrderService {
     } else if (orderSide === 'sender') {
       return await this.ordersRepo.findBy({ recipient: Equal(customerId) });
     }
+  }
+
+  async deleteOrder(orderId: number) {
+    await this.ordersRepo.delete(orderId);
   }
 }

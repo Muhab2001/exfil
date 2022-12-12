@@ -1,6 +1,6 @@
 export enum Role {
   Customer = 1,
   DeliveryEmployee = 2,
-  RetailEmployee,
-  Admin = 3,
+  RetailEmployee = 3,
+  Admin = 4,
 }

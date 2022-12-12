@@ -12,6 +12,8 @@ import { CreatePackageDto } from './dto/create-package.dto';
 import { UpdatePackageDto } from './dto/update-package.dto';
 import bodyParser from 'body-parser';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { GetPackagesDto } from './dto/get-packages.dto';
+import { Query } from '@nestjs/common/decorators';
 
 @Controller('package')
 export class PackageController {
@@ -23,13 +25,13 @@ export class PackageController {
   }
 
   @Get()
-  findAll() {
-    return this.packageService.findAll();
+  findAll(@Query() GetPackagesDto: GetPackagesDto) {
+    return this.packageService.findAll(GetPackagesDto);
   }
 
-  @Get('orders')
-  findOrders() {
-    return this.packageService.findUserOrders(1);
+  @Get('order/:id')
+  findOrders(@Param('id') orderId: number) {
+    return this.packageService.findOrderPackages(orderId);
   }
 
   @Get(':id')

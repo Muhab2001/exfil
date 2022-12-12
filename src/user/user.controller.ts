@@ -81,7 +81,7 @@ export class UserController {
   @Patch('retail-employee/:id')
   updateRetailEmployee(
     @Param('id') id: string,
-    @Body() updateUserDto: UpdateUserDto,
+    @Body() updateUserDto: UpdateUserDto & { retail_center: number },
   ) {
     return this.userService.updateRetailEmployee(id, updateUserDto);
   }

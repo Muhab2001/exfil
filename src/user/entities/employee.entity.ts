@@ -4,7 +4,9 @@ import { User } from './user.entity';
 
 @Entity()
 export abstract class Employee {
-  @PrimaryColumn({ type: 'text', name: 'id' })
+  @PrimaryColumn({ type: 'text' })
+  userId: string;
+
   @OneToOne(() => User, {
     nullable: false,
     eager: true,
@@ -12,7 +14,7 @@ export abstract class Employee {
     onDelete: 'CASCADE',
     cascade: true,
   })
-  @JoinColumn()
+  @JoinColumn({ name: 'userId' })
   user: User;
 
   @Column({ type: 'float' })

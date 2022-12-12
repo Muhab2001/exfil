@@ -1,14 +1,20 @@
 import {
   IsArray,
   IsEnum,
+  IsIn,
+  IsInt,
   IsISO8601,
   IsNotEmpty,
+  IsNumber,
+  IsNumberString,
   IsOptional,
   IsString,
 } from 'class-validator';
 
 import { Transform } from 'class-transformer';
 import { SortType } from 'src/utils.enum';
+import { PackageStatus } from '../enums/package-status.enum';
+import { PackageCategory } from '../enums/package-category.enum';
 
 export class GetPackagesDto {
   @IsNotEmpty()
@@ -20,40 +26,61 @@ export class GetPackagesDto {
   to: string;
 
   @IsOptional()
-  @Transform(({ value }) => value.split(','))
-  @IsArray()
-  @IsString({ each: true })
-  cateogries?: string[];
-
-  @IsNotEmpty()
-  @IsEnum(SortType)
-  categorySort?: SortType;
+  @IsString()
+  customer: string;
 
   @IsOptional()
   @Transform(({ value }) => value.split(','))
   @IsArray()
   @IsString({ each: true })
-  statuses?: string[];
+  categories: PackageCategory[] = Object.values(PackageCategory);
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsEnum(SortType)
-  statusSort: SortType;
+  categorySort?: SortType = SortType.DESCENDING;
 
   @IsOptional()
   @Transform(({ value }) => value.split(','))
+  @IsArray()
+  @IsString({ each: true })
+  statuses: PackageStatus[] = Object.values(PackageStatus);
+
+  @IsOptional()
+  @IsEnum(SortType)
+  statusSort: SortType = SortType.DESCENDING;
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    console.log(value.split(','));
+    return value.split(',');
+  })
   @IsArray()
   @IsString({ each: true })
   cities?: string[];
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsEnum(SortType)
-  citySort: SortType;
+  citySort: SortType = SortType.DESCENDING;
 
   @IsOptional()
-  @Transform(({ value }) => value.split(','))
-  @IsArray()
-  @IsString({ each: true })
-  customers?: string[];
+  @IsEnum(SortType)
+  customerSort: SortType = SortType.DESCENDING;
 
-  customerSort: SortType;
+  @IsOptional()
+  @IsEnum(SortType)
+  deliveryDateSort: SortType = SortType.DESCENDING;
+
+  @IsOptional()
+  @IsEnum(SortType)
+  entryDateSort: SortType = SortType.DESCENDING;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @Transform(({ value }) => parseInt(value))
+  offset: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @Transform(({ value }) => parseInt(value))
+  page_size: number;
 }

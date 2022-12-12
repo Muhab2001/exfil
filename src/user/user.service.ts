@@ -12,6 +12,8 @@ import { ConfigService } from '@nestjs/config';
 import { Role } from 'src/auth/role.enum';
 import { Admin } from './entities/admin.entity';
 import { GetUserDto } from './dto/get-user.dto';
+import { RetailCenter } from 'src/package/retail_center/entities/retail_center.entity';
+import { RetailCenterService } from 'src/package/retail_center/retail_center.service';
 @Injectable()
 export class UserService {
   constructor(
@@ -26,6 +28,7 @@ export class UserService {
     @InjectRepository(Admin)
     private adminRepo: Repository<Admin>,
     private readonly configService: ConfigService,
+    private readonly retailCenterService: RetailCenterService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -40,6 +43,8 @@ export class UserService {
       role: createUserDto.role,
     });
 
+    await this.userRepository.insert(newUser);
+
     // we create the related customer/employee objects
     switch (createUserDto.role) {
       case Role.Admin:
@@ -53,7 +58,7 @@ export class UserService {
       case Role.Customer:
         return await this.customerRepo.save({
           email: createUserDto.email,
-          phone_number: createUserDto.phone_number,
+          phone: createUserDto.phone_number,
           user: newUser,
         });
 
@@ -66,7 +71,7 @@ export class UserService {
         });
 
       case Role.RetailEmployee:
-        return await this.adminRepo.save({
+        return await this.retailEmployeeRepo.save({
           company_email: createUserDto.email,
           company_phone: createUserDto.phone_number,
           salary: createUserDto.salary,
@@ -89,30 +94,55 @@ export class UserService {
   async findAllCustomers(GetUserDto: GetUserDto) {
     if (!GetUserDto.username) return await this.customerRepo.findBy({});
     else {
-      const users = await this.userRepository.findBy({
-        username: ILike('%' + GetUserDto.username + '%'),
+      const users = await this.userRepository.find({
+        select: {
+          id: true,
+        },
+        where: {
+          username: Like('%' + GetUserDto.username + '%'),
+          role: Role.Customer,
+        },
       });
-      return await this.customerRepo.findBy({ user: In(users) });
+      console.log(users);
+      return await this.customerRepo.findBy({
+        user: In(users.map((user) => user.id)),
+      });
     }
   }
 
   async findAllDeliveryEmployees(GetUserDto: GetUserDto) {
     if (!GetUserDto.username) return await this.deliveryEmployeeRepo.findBy({});
     else {
-      const users = await this.userRepository.findBy({
-        username: Like(GetUserDto.username),
+      const users = await this.userRepository.find({
+        select: {
+          id: true,
+        },
+        where: {
+          username: ILike(GetUserDto.username),
+          role: Role.DeliveryEmployee,
+        },
       });
-      return await this.deliveryEmployeeRepo.findBy({ user: In(users) });
+      return await this.deliveryEmployeeRepo.findBy({
+        user: In(users.map((user) => user.id)),
+      });
     }
   }
 
   async findAllRetailEmployees(GetUserDto: GetUserDto) {
     if (!GetUserDto.username) return await this.retailEmployeeRepo.findBy({});
     else {
-      const users = await this.userRepository.findBy({
-        username: Like(GetUserDto.username),
+      const users = await this.userRepository.find({
+        select: {
+          id: true,
+        },
+        where: {
+          username: Like(GetUserDto.username),
+          role: Role.RetailEmployee,
+        },
       });
-      return await this.retailEmployeeRepo.findBy({ user: In(users) });
+      return await this.retailEmployeeRepo.findBy({
+        user: In(users.map((user) => user.id)),
+      });
     }
   }
 
@@ -121,25 +151,39 @@ export class UserService {
   }
 
   async findOneUserById(id: string) {
-    return await this.userRepository.findOneBy({ id: id });
+    return await this.userRepository.findOneByOrFail({ id: id });
   }
 
   async findOneByUsername(username: string) {
-    return await this.userRepository.findOneBy({ username: username });
+    return await this.userRepository.findOneByOrFail({ username: username });
   }
 
-  async findOneCustomer(email: string) {
+  async findOneCustomer(id: string) {
+    return await this.customerRepo.findOneByOrFail({ user: Equal(id) });
+  }
+
+  async findOneDeliveryEmployee(id: string) {
+    return await this.deliveryEmployeeRepo.findOneByOrFail({ user: Equal(id) });
+  }
+
+  async findOneRetailEmployee(id: string) {
+    return await this.retailEmployeeRepo.findOneByOrFail({ user: Equal(id) });
+  }
+
+  async findOneCustomerByEmail(email: string) {
     return await this.customerRepo.findOneByOrFail({ email: email });
   }
 
-  async findOneDeliveryEmployee(email: string) {
+  async findOneDeliveryEmployeeByEmail(email: string) {
     return await this.deliveryEmployeeRepo.findOneByOrFail({
       company_email: email,
     });
   }
 
-  async findOneRetailEmployee(id: string) {
-    return await this.retailEmployeeRepo.findOneByOrFail({ user: Equal(id) });
+  async findOneRetailEmployeeByEmail(email: string) {
+    return await this.retailEmployeeRepo.findOneByOrFail({
+      company_email: email,
+    });
   }
 
   async updateCustomer(inputId: string, updateUserDto: UpdateUserDto) {
@@ -150,8 +194,18 @@ export class UserService {
     await this.deliveryEmployeeRepo.update(inputId, updateUserDto);
   }
 
-  async updateRetailEmployee(inputId: string, updateUserDto: UpdateUserDto) {
-    await this.retailEmployeeRepo.update(inputId, updateUserDto);
+  async updateRetailEmployee(
+    inputId: string,
+    updateUserDto: UpdateUserDto & { retail_center: number },
+  ) {
+    const { retail_center, ...baseAttrs } = updateUserDto;
+
+    if (retail_center) {
+      baseAttrs['retail_center'] = await this.retailCenterService.findOne(
+        retail_center,
+      );
+    }
+    await this.retailEmployeeRepo.update(inputId, baseAttrs);
   }
 
   async remove(id: string) {

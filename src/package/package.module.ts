@@ -16,10 +16,18 @@ import { OrderController } from './orders/order.controller';
 import { UserModule } from 'src/user/user.module';
 import { Payment } from 'src/payment/entities/payment.entity';
 import { Address } from 'src/address/entities/address.entity';
+import { TransportEvent } from './transport_event/entities/transport_event.entity';
+import { LocationService } from './location/location.service';
 
 @Module({
   controllers: [PackageController, ReportController, OrderController],
-  providers: [PackageService, OrderService, ReportService, ReportsGateway],
+  providers: [
+    PackageService,
+    OrderService,
+    ReportService,
+    ReportsGateway,
+    LocationService,
+  ],
   imports: [
     TransportEventModule,
     RetailCenterModule,
@@ -31,6 +39,7 @@ import { Address } from 'src/address/entities/address.entity';
       Address,
       Payment,
       PackageLocation,
+      TransportEvent,
     ]),
     UserModule,
   ],
