@@ -14,7 +14,9 @@ import { User } from './user.entity';
 
 @Entity()
 export class RetailEmployee extends Employee {
-  @ManyToOne(() => RetailCenter, (retailCenter) => retailCenter.employees)
+  @ManyToOne(() => RetailCenter, (retailCenter) => retailCenter.employees, {
+    eager: true,
+  })
   retail_center: RetailCenter;
 
   @OneToMany(() => DeliveryOrder, (ord) => ord.retail_employee, {

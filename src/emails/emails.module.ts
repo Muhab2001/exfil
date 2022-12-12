@@ -22,7 +22,7 @@ import { ConfigService } from '@nestjs/config';
           },
         },
         defaults: {
-          from: `"Cortex" <${config.get('MAIL_USER')}>`,
+          from: `"Exfil" <${config.get('MAIL_USER')}>`,
         },
         preview: true,
         template: {

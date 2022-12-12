@@ -17,16 +17,10 @@ import {
 } from 'class-validator';
 import { CreatePackageDto } from './create-package.dto';
 
-class contact {
-  username: string;
-  email: string;
-  phone: string;
-}
-
 export class CreateOrderDto {
   @IsNotEmpty()
   @ArrayNotEmpty()
-  @ValidateNested()
+  @ValidateNested({ each: true })
   @Type(() => CreatePackageDto)
   packages: CreatePackageDto[];
 
@@ -41,7 +35,7 @@ export class CreateOrderDto {
   @IsAlpha()
   country: string;
   @IsNotEmpty()
-  @IsAlphanumeric()
+  @IsString()
   street: string;
 
   @IsNotEmpty()
@@ -53,14 +47,12 @@ export class CreateOrderDto {
   delivery_date: string;
 
   @IsNotEmpty()
-  @ValidateNested()
-  @Type(() => contact)
-  sender: contact;
+  @IsEmail()
+  sender: string;
 
   @IsNotEmpty()
-  @ValidateNested()
-  @Type(() => contact)
-  recipient: contact;
+  @IsEmail()
+  recipient: string;
 
   @IsNotEmpty()
   @IsEmail()

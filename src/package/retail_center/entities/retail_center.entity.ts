@@ -3,10 +3,12 @@ import { RetailEmployee } from 'src/user/entities/retail-employee.entity';
 import {
   Column,
   Entity,
+  JoinColumn,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { RetailCenterType } from '../enums/retail-center-type.enum';
 
 @Entity()
 export class RetailCenter {
@@ -17,15 +19,16 @@ export class RetailCenter {
   name: string;
 
   @Column({ type: 'smallint', nullable: false })
-  type: number; //TODO create an enum type
+  type: RetailCenterType; //TODO create an enum type
 
-  @OneToOne(() => Address, { nullable: false })
+  @OneToOne(() => Address, { nullable: false, cascade: true, eager: true })
+  @JoinColumn()
   address: Address;
 
   @OneToMany(
     () => RetailEmployee,
     (retailEmployee) => retailEmployee.retail_center,
-    { nullable: false, lazy: true },
+    { nullable: true, lazy: true },
   )
   employees: Promise<RetailEmployee[]>;
 }

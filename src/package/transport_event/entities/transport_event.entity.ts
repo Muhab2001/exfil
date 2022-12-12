@@ -9,24 +9,35 @@ import {
   OneToMany,
   OneToOne,
   PrimaryColumn,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { EventType } from '../event.enum';
 
 @Entity()
 export class TransportEvent {
-  @PrimaryColumn({ type: 'text' })
-  schedule_number: string;
+  @PrimaryGeneratedColumn()
+  schedule_number: number;
 
   @Column({ type: 'text', nullable: false })
-  type: EventType; //TODO: replace with an enum
+  type: EventType;
 
-  @OneToOne(() => Location, { nullable: false, eager: true })
-  start_location: Location;
+  @OneToOne(() => PackageLocation, {
+    nullable: false,
+    eager: true,
+    cascade: true,
+  })
+  @JoinColumn()
+  start_location: PackageLocation;
 
-  @OneToOne(() => Location, { nullable: true, eager: true })
-  end_location: Location;
+  @OneToOne(() => PackageLocation, {
+    nullable: true,
+    eager: true,
+    cascade: true,
+  })
+  @JoinColumn()
+  end_location: PackageLocation;
 
-  @ManyToOne(() => DeliveryOrder, (order) => order.transport_event, {
+  @ManyToOne(() => DeliveryOrder, (order) => order.transport_events, {
     nullable: false,
   })
   order: DeliveryOrder;

@@ -9,6 +9,8 @@ import { RetailEmployee } from './entities/retail-employee.entity';
 import { User } from './entities/user.entity';
 import { ConfigModule } from '@nestjs/config';
 import { Admin } from './entities/admin.entity';
+import { RetailCenter } from 'src/package/retail_center/entities/retail_center.entity';
+import { RetailCenterModule } from 'src/package/retail_center/retail_center.module';
 
 @Module({
   imports: [
@@ -19,6 +21,7 @@ import { Admin } from './entities/admin.entity';
       DeliveryEmployee,
       RetailEmployee,
     ]),
+    RetailCenterModule,
     ConfigModule,
   ],
   controllers: [UserController],

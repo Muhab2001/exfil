@@ -52,7 +52,7 @@ export class Package {
   @CreateDateColumn({ type: 'datetime', nullable: true })
   entry_timestamp: string;
 
-  @Column({ type: 'text', nullable: false })
+  @Column({ type: 'text', nullable: false, default: PackageStatus.TRANSIT })
   status: PackageStatus; // convert to an enum type
 
   @Column({ type: 'text', nullable: false })
@@ -68,16 +68,17 @@ export class Package {
   @JoinColumn()
   current_location: PackageLocation;
 
-  @ManyToMany(() => PackageLocation, { nullable: false })
+  @ManyToMany(() => PackageLocation, (location) => location.packages, {
+    nullable: false,
+  })
   @JoinTable({ name: 'package_locations' })
   package_locations: PackageLocation[];
 
-  // @ManyToOne(() => Payment, (payment) => payment.packages, { nullable: false })
-  // payment: Payment;
-
   @ManyToOne(() => DeliveryOrder, (order) => order.packages, {
     nullable: false,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
     eager: true,
   })
-  order: DeliveryOrder;
+  delivery_order: DeliveryOrder;
 }

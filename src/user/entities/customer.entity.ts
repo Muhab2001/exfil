@@ -3,14 +3,17 @@ import { User } from './user.entity';
 
 @Entity()
 export abstract class Customer {
-  @PrimaryColumn({ type: 'text', name: 'id' })
+  @PrimaryColumn({ type: 'text' })
+  userId: string;
+
   @OneToOne(() => User, {
     nullable: false,
     onUpdate: 'CASCADE',
     onDelete: 'CASCADE',
     cascade: true,
+    eager: true,
   })
-  @JoinColumn()
+  @JoinColumn({ name: 'userId' })
   user: User;
 
   @Column({ type: 'text', unique: true })

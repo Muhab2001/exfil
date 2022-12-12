@@ -1,3 +1,4 @@
+import { Address } from 'src/address/entities/address.entity';
 import { Payment } from 'src/payment/entities/payment.entity';
 import { Customer } from 'src/user/entities/customer.entity';
 import { DeliveryEmployee } from 'src/user/entities/delivery-employee.entity';
@@ -30,29 +31,43 @@ export class DeliveryOrder {
     eager: true,
     nullable: false,
   })
-  @JoinColumn({})
+  @JoinColumn()
   deliveryEmployee: DeliveryEmployee;
 
   //   each order ships multiple packages
-  @OneToMany(() => Package, (pkg) => pkg.order, { lazy: true, nullable: false })
-  packages: Promise<Package[]>;
+  @OneToMany(() => Package, (pkg) => pkg.delivery_order, {
+    nullable: false,
+    cascade: true,
+  })
+  packages: Package[];
 
-  @OneToMany(() => TransportEvent, (event) => event.order, { nullable: true })
+  @OneToMany(() => TransportEvent, (event) => event.order, {
+    nullable: true,
+    cascade: true,
+    eager: true,
+  })
   @JoinColumn()
-  transport_event: TransportEvent[];
+  transport_events: TransportEvent[];
 
   @OneToOne(() => Payment, { nullable: false, eager: true, cascade: true })
   @JoinColumn()
   payment: Payment;
 
   @ManyToOne(() => Customer, { nullable: false, eager: true })
-  @JoinColumn({ name: 'customerId' })
+  @JoinColumn({ name: 'recipientId' })
   recipient: Customer;
 
   @ManyToOne(() => Customer, { nullable: false, eager: true })
-  @JoinColumn({ name: 'customerId' })
+  @JoinColumn({ name: 'senderId' })
   sender: Customer;
   //? registered by:
-  @ManyToOne(() => RetailEmployee, (emp) => emp.orders, { eager: true })
+  @ManyToOne(() => RetailEmployee, (emp) => emp.orders, {
+    eager: true,
+    nullable: false,
+  })
   retail_employee: RetailEmployee;
+
+  @OneToOne(() => Address, { nullable: false, eager: true, cascade: true })
+  @JoinColumn()
+  final_destination: Address;
 }

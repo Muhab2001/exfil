@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Address {
@@ -12,5 +12,5 @@ export class Address {
   @Column({ nullable: false, type: 'text' })
   street: string;
   @Column({ nullable: false, type: 'text' })
-  zip_code: string;
+  zipcode: string;
 }

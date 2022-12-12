@@ -24,11 +24,12 @@ export class PackageLocation {
   @Column({ type: 'smallint' })
   type: PackageLocationType;
   // one location has one address only
-  @OneToOne(() => Address, { nullable: false })
+  @ManyToOne(() => Address, { nullable: false, cascade: true, eager: true })
   @JoinColumn()
   address: Address;
   // many packages can be at the same location together, and one package will go through multiple locations
-  @ManyToMany(() => Package, (pkg) => pkg.current_location, {
+
+  @ManyToMany(() => Package, (pkg) => pkg.package_locations, {
     lazy: true,
     nullable: true,
     cascade: true,
@@ -36,9 +37,4 @@ export class PackageLocation {
     onUpdate: 'CASCADE',
   })
   packages: Promise<Package[]>;
-
-  @ManyToOne(() => TransportEvent, (event) => event.delivery_route, {
-    eager: true,
-  })
-  transport_event: TransportEvent;
 }
