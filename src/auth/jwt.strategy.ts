@@ -15,7 +15,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: TokenFormatDto): Promise<TokenFormatDto> {
-    console.log('INSIDE JWT GUARD');
+    console.log('INSIDE JWT GUARD', payload);
 
     return payload;
   }

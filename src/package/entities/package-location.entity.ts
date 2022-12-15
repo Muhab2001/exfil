@@ -1,4 +1,4 @@
-import { Address } from 'src/address/entities/address.entity';
+import { GeoAddress } from 'src/package/entities/address.entity';
 import {
   Column,
   Entity,
@@ -24,9 +24,14 @@ export class PackageLocation {
   @Column({ type: 'smallint' })
   type: PackageLocationType;
   // one location has one address only
-  @ManyToOne(() => Address, { nullable: false, cascade: true, eager: true })
+  @ManyToOne(() => GeoAddress, {
+    nullable: false,
+    cascade: true,
+    eager: true,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
-  address: Address;
+  address: GeoAddress;
   // many packages can be at the same location together, and one package will go through multiple locations
 
   @ManyToMany(() => Package, (pkg) => pkg.package_locations, {

@@ -16,6 +16,8 @@ import { User } from './user.entity';
 export class RetailEmployee extends Employee {
   @ManyToOne(() => RetailCenter, (retailCenter) => retailCenter.employees, {
     eager: true,
+    onDelete: 'SET NULL',
+    nullable: true,
   })
   retail_center: RetailCenter;
 

@@ -27,10 +27,12 @@ export class GetPackagesDto {
 
   @IsOptional()
   @IsString()
-  customer: string;
+  customer?: string;
 
   @IsOptional()
-  @Transform(({ value }) => value.split(','))
+  @Transform(({ value }) => {
+    return value.split(',');
+  })
   @IsArray()
   @IsString({ each: true })
   categories: PackageCategory[] = Object.values(PackageCategory);
@@ -40,18 +42,15 @@ export class GetPackagesDto {
   categorySort?: SortType = SortType.DESCENDING;
 
   @IsOptional()
-  @Transform(({ value }) => value.split(','))
+  @Transform(({ value }) => {
+    return value.split(',');
+  })
   @IsArray()
   @IsString({ each: true })
   statuses: PackageStatus[] = Object.values(PackageStatus);
 
   @IsOptional()
-  @IsEnum(SortType)
-  statusSort: SortType = SortType.DESCENDING;
-
-  @IsOptional()
   @Transform(({ value }) => {
-    console.log(value.split(','));
     return value.split(',');
   })
   @IsArray()

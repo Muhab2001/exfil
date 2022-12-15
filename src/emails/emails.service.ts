@@ -6,20 +6,18 @@ import { CreateEmailDto } from './dto/create-email.dto';
 export class EmailsService {
   constructor(private readonly mailerService: MailerService) {}
 
-  async sendBatchEmail<T>(createEmailDto: CreateEmailDto<T>) {
-    for (const section of Object.keys(createEmailDto.sectionsEmails)) {
-      console.log('RECPIEINTS: ', createEmailDto.sectionsEmails[section]);
-
-      try {
-        await this.mailerService.sendMail({
-          to: createEmailDto.sectionsEmails[section],
-          subject: createEmailDto.subject,
-          template: createEmailDto.template,
-          context: { ...createEmailDto.context, section: section },
-        });
-      } catch (e) {
-        throw new BadRequestException(`Failed to send an email for ${section}`);
-      }
+  async sendEmail<T>(createEmailDto: CreateEmailDto<T>) {
+    try {
+      await this.mailerService.sendMail({
+        to: createEmailDto.email,
+        subject: createEmailDto.subject,
+        template: createEmailDto.template,
+        context: { ...createEmailDto.context },
+      });
+    } catch (e) {
+      throw new BadRequestException(
+        `Failed to send an email for ${createEmailDto.email}`,
+      );
     }
   }
 }

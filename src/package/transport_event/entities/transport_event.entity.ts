@@ -39,6 +39,7 @@ export class TransportEvent {
 
   @ManyToOne(() => DeliveryOrder, (order) => order.transport_events, {
     nullable: false,
+    onUpdate: 'CASCADE',
   })
   order: DeliveryOrder;
 

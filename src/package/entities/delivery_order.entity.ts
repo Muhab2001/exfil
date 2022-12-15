@@ -1,4 +1,4 @@
-import { Address } from 'src/address/entities/address.entity';
+import { GeoAddress } from 'src/package/entities/address.entity';
 import { Payment } from 'src/payment/entities/payment.entity';
 import { Customer } from 'src/user/entities/customer.entity';
 import { DeliveryEmployee } from 'src/user/entities/delivery-employee.entity';
@@ -67,7 +67,7 @@ export class DeliveryOrder {
   })
   retail_employee: RetailEmployee;
 
-  @OneToOne(() => Address, { nullable: false, eager: true, cascade: true })
+  @OneToOne(() => GeoAddress, { nullable: false, eager: true, cascade: true })
   @JoinColumn()
-  final_destination: Address;
+  final_destination: GeoAddress;
 }

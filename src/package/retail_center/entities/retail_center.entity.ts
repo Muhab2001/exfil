@@ -1,4 +1,4 @@
-import { Address } from 'src/address/entities/address.entity';
+import { GeoAddress } from 'src/package/entities/address.entity';
 import { RetailEmployee } from 'src/user/entities/retail-employee.entity';
 import {
   Column,
@@ -21,14 +21,14 @@ export class RetailCenter {
   @Column({ type: 'smallint', nullable: false })
   type: RetailCenterType; //TODO create an enum type
 
-  @OneToOne(() => Address, { nullable: false, cascade: true, eager: true })
+  @OneToOne(() => GeoAddress, { nullable: false, cascade: true, eager: true })
   @JoinColumn()
-  address: Address;
+  address: GeoAddress;
 
   @OneToMany(
     () => RetailEmployee,
     (retailEmployee) => retailEmployee.retail_center,
-    { nullable: true, lazy: true },
+    { nullable: false, lazy: true },
   )
   employees: Promise<RetailEmployee[]>;
 }

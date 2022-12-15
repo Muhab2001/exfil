@@ -12,11 +12,18 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { GetUserDto } from './dto/get-user.dto';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Role } from 'src/auth/role.enum';
+import { UseGuards } from '@nestjs/common/decorators';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Roles(Role.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
@@ -70,6 +77,8 @@ export class UserController {
     return this.userService.updateCustomer(id, updateUserDto);
   }
 
+  @Roles(Role.Admin, Role.DeliveryEmployee)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Patch('delivery-employee/:id')
   updateDeliveryEmployee(
     @Param('id') id: string,
@@ -78,6 +87,8 @@ export class UserController {
     return this.userService.updateDeliverEmployee(id, updateUserDto);
   }
 
+  @Roles(Role.Admin, Role.RetailEmployee)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Patch('retail-employee/:id')
   updateRetailEmployee(
     @Param('id') id: string,
@@ -86,6 +97,8 @@ export class UserController {
     return this.userService.updateRetailEmployee(id, updateUserDto);
   }
 
+  @Roles(Role.Admin, Role.Customer)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.userService.remove(id);

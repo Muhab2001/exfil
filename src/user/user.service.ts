@@ -187,25 +187,73 @@ export class UserService {
   }
 
   async updateCustomer(inputId: string, updateUserDto: UpdateUserDto) {
-    await this.customerRepo.update(inputId, updateUserDto);
+    const customer = await this.findOneCustomer(inputId);
+    const { username, password, phone_number, email } = updateUserDto;
+
+    if (username !== undefined) {
+      customer.user.username = username;
+    }
+
+    if (email) {
+      customer.email = email;
+    }
+    if (phone_number) {
+      customer.phone;
+    }
+    await this.customerRepo.save(customer);
   }
 
   async updateDeliverEmployee(inputId: string, updateUserDto: UpdateUserDto) {
-    await this.deliveryEmployeeRepo.update(inputId, updateUserDto);
+    const deliverer = await this.findOneDeliveryEmployee(inputId);
+
+    const { username, password, salary, phone_number, email } = updateUserDto;
+
+    if (username !== undefined) {
+      deliverer.user.username = username;
+    }
+
+    if (salary) {
+      deliverer.salary = salary;
+    }
+
+    if (email) {
+      deliverer.company_email = email;
+    }
+    if (phone_number) {
+      deliverer.company_phone;
+    }
+    await this.deliveryEmployeeRepo.save(deliverer);
   }
 
   async updateRetailEmployee(
     inputId: string,
     updateUserDto: UpdateUserDto & { retail_center: number },
   ) {
-    const { retail_center, ...baseAttrs } = updateUserDto;
+    const retailer = await this.findOneRetailEmployee(inputId);
+    const { retail_center, username, password, salary, phone_number, email } =
+      updateUserDto;
+
+    if (username !== undefined) {
+      retailer.user.username = username;
+    }
 
     if (retail_center) {
-      baseAttrs['retail_center'] = await this.retailCenterService.findOne(
+      retailer.retail_center = await this.retailCenterService.findOne(
         retail_center,
       );
     }
-    await this.retailEmployeeRepo.update(inputId, baseAttrs);
+
+    if (salary) {
+      retailer.salary = salary;
+    }
+
+    if (email) {
+      retailer.company_email = email;
+    }
+    if (phone_number) {
+      retailer.company_phone;
+    }
+    await this.retailEmployeeRepo.save(retailer);
   }
 
   async remove(id: string) {

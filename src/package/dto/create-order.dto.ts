@@ -9,6 +9,7 @@ import {
   IsEmail,
   IsInt,
   IsNotEmpty,
+  IsNumber,
   IsNumberString,
   IsPositive,
   IsString,
@@ -25,7 +26,8 @@ export class CreateOrderDto {
   packages: CreatePackageDto[];
 
   @IsNotEmpty()
-  @IsPositive()
+  @IsNumber()
+  @Validate(({ value }) => value >= 0)
   payment: number;
 
   @IsNotEmpty()
@@ -41,10 +43,6 @@ export class CreateOrderDto {
   @IsNotEmpty()
   @IsNumberString()
   zipcode: string;
-
-  @IsNotEmpty()
-  @IsDateString()
-  delivery_date: string;
 
   @IsNotEmpty()
   @IsEmail()
