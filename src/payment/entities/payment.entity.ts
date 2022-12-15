@@ -42,7 +42,6 @@ export class Payment {
   // packages: Promise<Package[]>;
 
   @OneToOne(() => DeliveryOrder, (order) => order.payment, {
-    lazy: true,
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })

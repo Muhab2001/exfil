@@ -5,6 +5,7 @@ import {
   IsISO8601,
   IsNotEmpty,
   IsOptional,
+  IsString,
 } from 'class-validator';
 
 export class FetchReportDto {
@@ -17,5 +18,6 @@ export class FetchReportDto {
   @IsOptional()
   @IsArray()
   @ArrayNotEmpty()
-  location_ids?: number[];
+  @IsString({ each: true })
+  cities?: string[];
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { send } from 'process';
-import { Address } from 'src/address/entities/address.entity';
+import { GeoAddress } from 'src/package/entities/address.entity';
 import { Payment } from 'src/payment/entities/payment.entity';
 import { UserService } from 'src/user/user.service';
 import { Equal, Repository } from 'typeorm';
@@ -11,6 +11,11 @@ import { DeliveryOrder } from '../entities/delivery_order.entity';
 import { Package } from '../entities/package.entity';
 import { PackageLocation } from '../entities/package-location.entity';
 import { PackageLocationType } from '../enums/package-location.enum';
+import { EmailsService } from 'src/emails/emails.service';
+import { CACHE_MANAGER } from '@nestjs/common/cache';
+import { Inject } from '@nestjs/common/decorators';
+import { Role } from 'src/auth/role.enum';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class OrderService {
@@ -23,14 +28,16 @@ export class OrderService {
     private packagesRepo: Repository<Package>,
     @InjectRepository(PackageLocation)
     private locationsRepo: Repository<PackageLocation>,
-    @InjectRepository(Address)
-    private addresRepo: Repository<Address>,
+    @InjectRepository(GeoAddress)
+    private addresRepo: Repository<GeoAddress>,
     private readonly usersService: UserService,
+    private readonly emailsService: EmailsService,
+
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
-  async findOne(id: number) {
-    console.log(await this.ordersRepo.findBy({}));
-    return await this.ordersRepo.findOneOrFail({
+  async findOneRaw(id: number) {
+    const result = await this.ordersRepo.findOneOrFail({
       relations: {
         packages: {
           package_locations: true,
@@ -40,6 +47,31 @@ export class OrderService {
         id: id,
       },
     });
+
+    return result;
+  }
+
+  async findOne(orderId: number, userId: string, userRole: Role) {
+    const order = await this.ordersRepo.findOneOrFail({
+      relations: {
+        packages: {
+          package_locations: true,
+        },
+      },
+      where: {
+        id: orderId,
+      },
+    });
+
+    if (userRole === Role.Customer) {
+      return {
+        ...order,
+        isOTPSent:
+          (await this.cacheManager.get(userId + '-otp')) !== undefined ? 1 : 0,
+      };
+    }
+
+    return order;
   }
 
   async save(order: DeliveryOrder) {
@@ -99,7 +131,6 @@ export class OrderService {
         height: pkg.height,
         weight: pkg.weight,
         entry_timestamp: new Date().toLocaleString(),
-        delivery_date: CreateOrderDto.delivery_date,
         current_location: currentLocation,
         package_locations: [currentLocation],
       });
@@ -119,9 +150,18 @@ export class OrderService {
     const savedOrder = await this.ordersRepo.save(order);
     console.log(savedOrder);
 
-    return savedOrder;
-
     // TODO: send email to confirm order creation
+    await this.emailsService.sendEmail({
+      email: sender.email,
+      subject: 'Order Confirmation',
+      template: 'order-confirm',
+      context: {
+        username: sender.user.username,
+        orderNo: savedOrder.id,
+      },
+    });
+
+    return savedOrder;
   }
 
   async updateOrder(order_id: number, UpdateOrderDto: UpdateOrderDto) {
@@ -130,6 +170,8 @@ export class OrderService {
     const existingOrder = await this.ordersRepo.findOneByOrFail({
       id: order_id,
     });
+
+    console.log(existingOrder);
 
     const {
       delivery_employee: delivery_employee_email,
@@ -158,7 +200,17 @@ export class OrderService {
 
     if (payment_amount) existingOrder.payment.amount = payment_amount;
 
-    await this.ordersRepo.update({ id: existingOrder.id }, existingOrder);
+    if (
+      otherProps.city &&
+      otherProps.country &&
+      otherProps.street &&
+      otherProps.zipcode
+    ) {
+      existingOrder.final_destination = this.addresRepo.create({
+        ...otherProps,
+      });
+    }
+    await this.ordersRepo.save(existingOrder);
   }
 
   async findDeliveryEmployeeOrders(deliveryEmpId: number) {
@@ -182,7 +234,7 @@ export class OrderService {
     if (orderSide === 'recipient') {
       return await this.ordersRepo.findBy({ recipient: Equal(customerId) });
     } else if (orderSide === 'sender') {
-      return await this.ordersRepo.findBy({ recipient: Equal(customerId) });
+      return await this.ordersRepo.findBy({ sender: Equal(customerId) });
     }
   }
 

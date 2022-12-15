@@ -1,7 +1,8 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class Address {
+export class GeoAddress {
+  @Index(['country', 'city', 'street', 'zipcode'], { unique: true })
   @PrimaryGeneratedColumn()
   id: number;
 

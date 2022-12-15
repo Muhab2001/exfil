@@ -11,38 +11,33 @@ import { PackageLocation } from './entities/package-location.entity';
 import { ReportController } from './reports/report.controller';
 import { OrderService } from './orders/order.service';
 import { ReportService } from './reports/report.service';
-import { ReportsGateway } from './reports/reports.gateway';
 import { OrderController } from './orders/order.controller';
 import { UserModule } from 'src/user/user.module';
 import { Payment } from 'src/payment/entities/payment.entity';
-import { Address } from 'src/address/entities/address.entity';
+
 import { TransportEvent } from './transport_event/entities/transport_event.entity';
 import { LocationService } from './location/location.service';
+import { GeoAddress } from 'src/package/entities/address.entity';
+import { EmailsModule } from 'src/emails/emails.module';
 
 @Module({
   controllers: [PackageController, ReportController, OrderController],
-  providers: [
-    PackageService,
-    OrderService,
-    ReportService,
-    ReportsGateway,
-    LocationService,
-  ],
+  providers: [PackageService, OrderService, ReportService, LocationService],
   imports: [
-    TransportEventModule,
-    RetailCenterModule,
-
     TypeOrmModule.forFeature([
       DeliveryOrder,
       RetailCenter,
       Package,
-      Address,
       Payment,
       PackageLocation,
       TransportEvent,
+      GeoAddress,
     ]),
+    TransportEventModule,
+    RetailCenterModule,
     UserModule,
+    EmailsModule,
   ],
-  exports: [PackageService, OrderService],
+  exports: [PackageService, OrderService, LocationService],
 })
 export class PackageModule {}
