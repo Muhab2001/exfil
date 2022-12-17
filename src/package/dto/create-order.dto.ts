@@ -11,6 +11,7 @@ import {
   IsNotEmpty,
   IsNumber,
   IsNumberString,
+  IsOptional,
   IsPositive,
   IsString,
   Validate,
@@ -45,14 +46,14 @@ export class CreateOrderDto {
   zipcode: string;
 
   @IsNotEmpty()
-  @IsEmail()
+  @IsNumberString()
   sender: string;
 
   @IsNotEmpty()
-  @IsEmail()
+  @IsNumberString()
   recipient: string;
 
   @IsNotEmpty()
-  @IsEmail()
+  @IsNumberString()
   delivery_employee: string;
 }

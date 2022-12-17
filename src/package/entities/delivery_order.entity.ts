@@ -29,7 +29,8 @@ export class DeliveryOrder {
   //   each order is possible shipped by multiple employees, and an employee can ship multiple orders
   @ManyToOne(() => DeliveryEmployee, (emp) => emp.orders, {
     eager: true,
-    nullable: false,
+    nullable: true,
+    onDelete: 'SET NULL',
   })
   @JoinColumn()
   deliveryEmployee: DeliveryEmployee;
@@ -53,21 +54,30 @@ export class DeliveryOrder {
   @JoinColumn()
   payment: Payment;
 
-  @ManyToOne(() => Customer, { nullable: false, eager: true })
+  @ManyToOne(() => Customer, {
+    nullable: true,
+    eager: true,
+    onDelete: 'SET NULL',
+  })
   @JoinColumn({ name: 'recipientId' })
   recipient: Customer;
 
-  @ManyToOne(() => Customer, { nullable: false, eager: true })
+  @ManyToOne(() => Customer, {
+    nullable: true,
+    eager: true,
+    onDelete: 'SET NULL',
+  })
   @JoinColumn({ name: 'senderId' })
   sender: Customer;
   //? registered by:
   @ManyToOne(() => RetailEmployee, (emp) => emp.orders, {
     eager: true,
-    nullable: false,
+    nullable: true,
+    onDelete: 'SET NULL',
   })
   retail_employee: RetailEmployee;
 
-  @OneToOne(() => GeoAddress, { nullable: false, eager: true, cascade: true })
+  @ManyToOne(() => GeoAddress, { nullable: false, eager: true, cascade: true })
   @JoinColumn()
   final_destination: GeoAddress;
 }

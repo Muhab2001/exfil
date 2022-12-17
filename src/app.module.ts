@@ -9,6 +9,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { GeoAddress } from './package/entities/address.entity';
 import { LoggerMiddleware } from './logger.middleware';
+import { DataSource } from 'typeorm';
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import { LoggerMiddleware } from './logger.middleware';
       database: 'db/database.sqlite',
       synchronize: true,
       autoLoadEntities: true,
-      logging: ['error', 'schema', 'query'],
+      logging: ['error', 'schema'],
       subscribers: ['dist/**/**/**/*.subscriber{.ts,.js}'],
     }),
     ConfigModule.forRoot({
@@ -36,6 +37,9 @@ import { LoggerMiddleware } from './logger.middleware';
   providers: [AppService],
 })
 export class AppModule {
+  constructor(private dataSource: DataSource) {
+    // dataSource.synchronize();
+  }
   configure(consumer: MiddlewareConsumer): void {
     consumer.apply(LoggerMiddleware).forRoutes('*');
   }

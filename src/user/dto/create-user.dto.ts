@@ -29,8 +29,13 @@ export class CreateUserDto {
   @IsPhoneNumber()
   phone_number: string; // shall be used in both personal phone number, and company phone number
   // will validate only for employees
-  @ValidateIf((o) => o.role !== Role.Customer)
+  @ValidateIf((o) => o.Role && o.role !== Role.Customer)
   @IsNotEmpty()
   @IsNumber()
   salary: number;
+
+  @ValidateIf((o) => o.Role && o.role === Role.RetailEmployee)
+  @IsNotEmpty()
+  @IsNumber()
+  retail_center: number;
 }

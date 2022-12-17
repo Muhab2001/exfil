@@ -21,7 +21,7 @@ export class TransportEvent {
   @Column({ type: 'text', nullable: false })
   type: EventType;
 
-  @OneToOne(() => PackageLocation, {
+  @ManyToOne(() => PackageLocation, {
     nullable: false,
     eager: true,
     cascade: true,
@@ -29,7 +29,7 @@ export class TransportEvent {
   @JoinColumn()
   start_location: PackageLocation;
 
-  @OneToOne(() => PackageLocation, {
+  @ManyToOne(() => PackageLocation, {
     nullable: true,
     eager: true,
     cascade: true,
@@ -43,7 +43,7 @@ export class TransportEvent {
   })
   order: DeliveryOrder;
 
-  @OneToOne(() => DeliveryEmployee, { nullable: false })
+  @ManyToOne(() => DeliveryEmployee, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn()
   delivery_employee: DeliveryEmployee;
 }

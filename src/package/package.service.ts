@@ -20,8 +20,6 @@ export class PackageService {
     private readonly orderService: OrderService,
     @InjectRepository(Package)
     private packageRepo: Repository<Package>,
-    @InjectRepository(GeoAddress)
-    private addressRepo: Repository<GeoAddress>,
   ) {}
 
   async create(createPackageDto: CreatePackageDto) {

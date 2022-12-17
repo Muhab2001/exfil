@@ -10,6 +10,7 @@ import { OrderService } from '../orders/order.service';
 import { PackageService } from '../package.service';
 import { TransportEvent } from '../transport_event/entities/transport_event.entity';
 import { LocationDto } from './insert-location.dto';
+import { PackageStatus } from '../enums/package-status.enum';
 @Injectable()
 export class LocationService {
   constructor(
@@ -34,12 +35,19 @@ export class LocationService {
     // fetch the order, and get the current location of one of the packages
     const order = await this.ordersService.findOneRaw(order_id);
 
-    const address = await this.addressRepo.save({
+    let address = await this.addressRepo.findOneBy({
       country: insertLocationDto.country,
       city: insertLocationDto.city,
       street: insertLocationDto.street,
       zipcode: insertLocationDto.zipcode,
     });
+    if (!address)
+      address = await this.addressRepo.save({
+        country: insertLocationDto.country,
+        city: insertLocationDto.city,
+        street: insertLocationDto.street,
+        zipcode: insertLocationDto.zipcode,
+      });
     // add the new location
     const NewLocation = this.locationRepo.create({
       timestamp: new Date().toLocaleString(),
@@ -47,26 +55,54 @@ export class LocationService {
       packages: Promise.resolve(order.packages),
       type: insertLocationDto.locationType,
     });
+    console.log('FINAL', address, order.final_destination);
 
-    if (address === order.final_destination) {
+    if (
+      address.city === order.final_destination.city &&
+      address.country === order.final_destination.country &&
+      address.street === order.final_destination.street &&
+      address.zipcode === order.final_destination.zipcode
+    ) {
       order.isDelivered = 1;
       // TODO: send an email notification about package arrival
-      await this.emailsService.sendEmail({
-        email: order.recipient.email,
-        subject: `Order #${order_id} delivered!`,
-        template: 'arrival',
-        context: {
-          username: order.recipient.user.username,
-          orderNo: order_id,
-        },
-      });
+      if (order.recipient)
+        await this.emailsService.sendEmail({
+          email: order.recipient.email,
+          subject: `Order #${order_id} delivered!`,
+          template: 'arrival',
+          context: {
+            username: order.recipient.user.username,
+            orderNo: order_id,
+          },
+        });
+
+      let delay_fine = 0;
+      const delivery_timestamp = new Date();
+      const expected_date_epoch = new Date(
+        order.packages[0].expected_delivery_date,
+      ).getTime();
+      if (delivery_timestamp.getTime() > expected_date_epoch)
+        delay_fine =
+          Math.floor(
+            (delivery_timestamp.getTime() - expected_date_epoch) /
+              1000 /
+              60 /
+              60 /
+              24,
+          ) * 5; // 5 riyals for each day late;
 
       await this.packageRepo.save(
         order.packages.map((pkg) => ({
           ...pkg,
-          delivery_date: new Date().toISOString(),
+          delivery_date:
+            pkg.status !== PackageStatus.LOST
+              ? delivery_timestamp.toISOString()
+              : null,
+          delay_fine: delay_fine,
         })),
       );
+
+      await this.ordersService.save(order);
     }
     // record the new event
     const transportEvent = await this.eventRepo.save({

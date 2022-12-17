@@ -16,6 +16,10 @@ import { CACHE_MANAGER } from '@nestjs/common/cache';
 import { Inject } from '@nestjs/common/decorators';
 import { Role } from 'src/auth/role.enum';
 import { Cache } from 'cache-manager';
+import { GetOrdersDto } from '../dto/get-orders.dto';
+import { RetailEmployee } from 'src/user/entities/retail-employee.entity';
+import { User } from 'src/user/entities/user.entity';
+import { GetPackagesDto } from '../dto/get-packages.dto';
 
 @Injectable()
 export class OrderService {
@@ -51,6 +55,49 @@ export class OrderService {
     return result;
   }
 
+  async findAll(getOrdersDto: GetOrdersDto) {
+    let query = this.ordersRepo
+      .createQueryBuilder('order')
+      .select('order.id')
+      .addSelect('retail_user.username')
+      .addSelect('order.isDelivered')
+      .addSelect('package.entry_timestamp')
+      .innerJoin(
+        RetailEmployee,
+        'retailer',
+        'order.retailEmployeeUserId = retailer.userId',
+      )
+      .innerJoin(Package, 'package', 'package.deliveryOrderId = order.id')
+      .innerJoin(User, 'retail_user', 'retail_user.id = retailer.userId')
+      .where('package.entry_timestamp >= :from', { from: getOrdersDto.from })
+      .andWhere('package.entry_timestamp <= :to', { to: getOrdersDto.to });
+    if (getOrdersDto.order_number) {
+      query = query.andWhere('order.id = :id', {
+        id: getOrdersDto.order_number,
+      });
+    }
+
+    if (getOrdersDto.isDelivered) {
+      query = query.andWhere('order.isDelivered IN (:...statuses)', {
+        statuses: getOrdersDto.isDelivered,
+      });
+    }
+
+    if (getOrdersDto.retailer?.length) {
+      query = query.andWhere('retail_user.username like :name', {
+        name: `%${getOrdersDto.retailer}%`,
+      });
+    }
+
+    return await query
+      .limit(getOrdersDto.page_size)
+      .offset(getOrdersDto.offset)
+      .orderBy('retail_user.username', getOrdersDto.customerSort)
+      .orderBy('package.entry_timestamp', getOrdersDto.entryDateSort)
+      .distinct(true)
+      .getRawMany();
+  }
+
   async findOne(orderId: number, userId: string, userRole: Role) {
     const order = await this.ordersRepo.findOneOrFail({
       relations: {
@@ -82,17 +129,16 @@ export class OrderService {
     retail_employee_id: string,
     CreateOrderDto: CreateOrderDto,
   ) {
-    const recipient = await this.usersService.findOneCustomerByEmail(
+    const recipient = await this.usersService.findOneCustomer(
       CreateOrderDto.recipient,
     );
-    const sender = await this.usersService.findOneCustomerByEmail(
+    const sender = await this.usersService.findOneCustomer(
       CreateOrderDto.sender,
     );
 
-    const delivery_employee =
-      await this.usersService.findOneDeliveryEmployeeByEmail(
-        CreateOrderDto.delivery_employee,
-      );
+    const delivery_employee = await this.usersService.findOneDeliveryEmployee(
+      CreateOrderDto.delivery_employee,
+    );
 
     const retail_employee = await this.usersService.findOneRetailEmployee(
       retail_employee_id,
@@ -115,13 +161,20 @@ export class OrderService {
 
     console.log(currentLocation);
 
-    const final_destination = this.addresRepo.create({
+    let final_destination = await this.addresRepo.findOneBy({
       country: CreateOrderDto.country,
       city: CreateOrderDto.city,
       street: CreateOrderDto.street,
       zipcode: CreateOrderDto.zipcode,
     });
-
+    if (!final_destination)
+      final_destination = await this.addresRepo.save({
+        country: CreateOrderDto.country,
+        city: CreateOrderDto.city,
+        street: CreateOrderDto.street,
+        zipcode: CreateOrderDto.zipcode,
+      });
+    const entry_timestamp = new Date().toLocaleString();
     const packages = CreateOrderDto.packages.map((pkg) => {
       return this.packagesRepo.create({
         category: pkg.category,
@@ -130,9 +183,10 @@ export class OrderService {
         length: pkg.length,
         height: pkg.height,
         weight: pkg.weight,
-        entry_timestamp: new Date().toLocaleString(),
+        entry_timestamp: entry_timestamp,
         current_location: currentLocation,
         package_locations: [currentLocation],
+        expected_delivery_date: pkg.expected_delivery_date,
       });
     });
 
@@ -184,17 +238,17 @@ export class OrderService {
     const updateOptions = { ...otherProps };
 
     if (recipient_email)
-      existingOrder.recipient = await this.usersService.findOneCustomerByEmail(
+      existingOrder.recipient = await this.usersService.findOneCustomer(
         recipient_email,
       );
     if (sender_email)
-      existingOrder.sender = await this.usersService.findOneCustomerByEmail(
+      existingOrder.sender = await this.usersService.findOneCustomer(
         sender_email,
       );
 
     if (delivery_employee_email)
       existingOrder.deliveryEmployee =
-        await this.usersService.findOneDeliveryEmployeeByEmail(
+        await this.usersService.findOneDeliveryEmployee(
           delivery_employee_email,
         );
 
@@ -206,9 +260,9 @@ export class OrderService {
       otherProps.street &&
       otherProps.zipcode
     ) {
-      existingOrder.final_destination = this.addresRepo.create({
-        ...otherProps,
-      });
+      let address = await this.addresRepo.findOneBy(otherProps);
+      if (!address) address = await this.addresRepo.save(otherProps);
+      existingOrder.final_destination = address;
     }
     await this.ordersRepo.save(existingOrder);
   }

@@ -12,6 +12,6 @@ export class GeoAddress {
   city: string;
   @Column({ nullable: false, type: 'text' })
   street: string;
-  @Column({ nullable: false, type: 'text' })
+  @Column({ nullable: false, type: 'text', unique: true })
   zipcode: string;
 }

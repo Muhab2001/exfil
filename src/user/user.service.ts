@@ -76,6 +76,9 @@ export class UserService {
           company_phone: createUserDto.phone_number,
           salary: createUserDto.salary,
           user: newUser,
+          retail_center: await this.retailCenterService.findOne(
+            createUserDto.retail_center,
+          ),
         });
 
       default:

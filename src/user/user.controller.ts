@@ -17,6 +17,7 @@ import { Role } from 'src/auth/role.enum';
 import { UseGuards } from '@nestjs/common/decorators';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { RegisterCustomerDto } from './dto/register-customer.dto';
 
 @Controller('user')
 export class UserController {
@@ -27,6 +28,11 @@ export class UserController {
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
+  }
+
+  @Post('register')
+  registerCustomer(@Body() createUserDto: RegisterCustomerDto) {
+    return this.userService.create({ ...createUserDto, role: Role.Customer });
   }
 
   // @Get()
