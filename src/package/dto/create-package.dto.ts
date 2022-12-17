@@ -1,5 +1,6 @@
 import {
   IsEnum,
+  IsISO8601,
   IsNotEmpty,
   IsNumber,
   IsPositive,
@@ -39,4 +40,8 @@ export class CreatePackageDto {
   @IsNumber()
   @Validate(({ value }) => value >= 0)
   insurance_amount: number;
+
+  @IsNotEmpty()
+  @IsISO8601()
+  expected_delivery_date: string;
 }

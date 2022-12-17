@@ -18,7 +18,10 @@ export class RetailCenterService {
   async create(createRetailCenterDto: CreateRetailCenterDto) {
     const { name, type, ...address } = createRetailCenterDto;
 
-    const savedAddress = await this.addresRepo.save({ ...address });
+    let savedAddress = await this.addresRepo.findOneBy(address);
+
+    if (!savedAddress)
+      savedAddress = await this.addresRepo.save({ ...address });
     return await this.retailCenterRepo.insert({
       name: name,
       type: type,
@@ -26,8 +29,17 @@ export class RetailCenterService {
     });
   }
 
-  findAll() {
-    return `This action returns all retailCenter`;
+  async findAll() {
+    return await this.retailCenterRepo.find({
+      select: {
+        address: {
+          city: true,
+          country: true,
+          zipcode: true,
+          street: true,
+        },
+      },
+    });
   }
 
   async findOne(id: number) {

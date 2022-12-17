@@ -1,4 +1,5 @@
 import { DeliveryOrder } from 'src/package/entities/delivery_order.entity';
+import { TransportEvent } from 'src/package/transport_event/entities/transport_event.entity';
 import { Entity, ManyToMany, OneToMany } from 'typeorm';
 import { Employee } from './employee.entity';
 
@@ -10,4 +11,10 @@ export class DeliveryEmployee extends Employee {
     cascade: true,
   })
   orders: Promise<DeliveryOrder[]>;
+
+  @OneToMany(() => TransportEvent, (ev) => ev.delivery_employee, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  event: TransportEvent[];
 }

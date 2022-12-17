@@ -48,6 +48,10 @@ export class Package {
 
   @Column({ type: 'datetime', nullable: true })
   delivery_date: string;
+
+  @Column({ type: 'datetime', nullable: true })
+  expected_delivery_date: string;
+
   @CreateDateColumn({ type: 'datetime', nullable: true })
   entry_timestamp: string;
 

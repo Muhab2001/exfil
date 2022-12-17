@@ -30,7 +30,7 @@ export class Payment {
   @Column({ type: 'smallint', default: 0 })
   fulfilled: number;
 
-  @ManyToOne(() => Customer, { nullable: false })
+  @ManyToOne(() => Customer, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'customer_id' })
   customer: Customer;
 

@@ -31,6 +31,11 @@ export class RetailCenterController {
     return this.retailCenterService.updateRetailCenter(id, updatePaymentDto);
   }
 
+  @Get()
+  getRetailCenterOptions() {
+    return this.retailCenterService.findAll();
+  }
+
   @Delete(':id')
   fulfillPayment(@Param('id') id: number) {
     return this.retailCenterService.delete(id);

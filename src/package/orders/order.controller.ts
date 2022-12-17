@@ -13,11 +13,14 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Role } from 'src/auth/role.enum';
+import { AdminCreateOrderDto } from '../dto/admin-create-order.dto';
 import { CreateOrderDto } from '../dto/create-order.dto';
 import { UpdateOrderDto } from '../dto/update-order.dto';
 import { LocationDto } from '../location/insert-location.dto';
 import { LocationService } from '../location/location.service';
 import { OrderService } from './order.service';
+import { GetOrdersDto } from '../dto/get-orders.dto';
+import { threadId } from 'worker_threads';
 
 @Controller('order')
 export class OrderController {
@@ -30,6 +33,21 @@ export class OrderController {
   @Post()
   createOrder(@Body() createorderDto: CreateOrderDto, @Req() req) {
     return this.ordersService.createOrder(req.user.id, createorderDto);
+  }
+
+  @Roles(Role.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Post('admin')
+  createAdminOrder(@Body() createorderDto: AdminCreateOrderDto) {
+    const { retail_employee_id, ...others } = createorderDto;
+    return this.ordersService.createOrder(retail_employee_id, others);
+  }
+
+  @Roles(Role.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Get()
+  getAllOrders(@Query() getOrderDto: GetOrdersDto) {
+    return this.ordersService.findAll(getOrderDto);
   }
 
   @Put(':id')
