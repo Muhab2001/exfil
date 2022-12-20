@@ -29,6 +29,7 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/passport": "^9.0.0",
     "@nestjs/platform-express": "^9.0.0",
+<<<<<<< HEAD
     "@nestjs/platform-socket.io": "^9.2.1",
     "@nestjs/typeorm": "^9.0.1",
     "@nestjs/websockets": "^9.2.1",
@@ -38,13 +39,22 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "nodemailer": "^6.8.0",
+=======
+    "@nestjs/typeorm": "^9.0.1",
+    "bcrypt": "^5.1.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.13.2",
+>>>>>>> b1194eccbd630b725b289fce1495097d0aee401a
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
+<<<<<<< HEAD
     "sqlite3": "^5.1.4",
+=======
+>>>>>>> b1194eccbd630b725b289fce1495097d0aee401a
     "typeorm": "^0.3.11"
   },
   "devDependencies": {
@@ -55,7 +65,10 @@
     "@types/express": "^4.17.13",
     "@types/jest": "28.1.8",
     "@types/node": "^16.0.0",
+<<<<<<< HEAD
     "@types/nodemailer": "^6.4.6",
+=======
+>>>>>>> b1194eccbd630b725b289fce1495097d0aee401a
     "@types/passport-jwt": "^3.0.7",
     "@types/passport-local": "^1.0.34",
     "@types/supertest": "^2.0.11",

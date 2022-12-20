@@ -6,7 +6,10 @@ import {
   Patch,
   Param,
   Delete,
+<<<<<<< HEAD
   Query,
+=======
+>>>>>>> b1194eccbd630b725b289fce1495097d0aee401a
 } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';

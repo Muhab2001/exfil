@@ -27,10 +27,17 @@ export class Payment {
   process_date: string;
 
   // 0: payment is pending, 1: payment if fulfilled
+<<<<<<< HEAD
   @Column({ type: 'smallint', default: 0 })
   fulfilled: number;
 
   @ManyToOne(() => Customer, { nullable: true, onDelete: 'SET NULL' })
+=======
+  @Column({ type: 'smallint' })
+  fulfilled: number;
+
+  @ManyToOne(() => Customer, { nullable: false })
+>>>>>>> b1194eccbd630b725b289fce1495097d0aee401a
   @JoinColumn({ name: 'customer_id' })
   customer: Customer;
 
@@ -41,9 +48,13 @@ export class Payment {
   // })
   // packages: Promise<Package[]>;
 
+<<<<<<< HEAD
   @OneToOne(() => DeliveryOrder, (order) => order.payment, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
+=======
+  @OneToOne(() => DeliveryOrder, (order) => order.payment, { lazy: true })
+>>>>>>> b1194eccbd630b725b289fce1495097d0aee401a
   order: Promise<DeliveryOrder>;
 }

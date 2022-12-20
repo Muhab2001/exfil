@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Equal, ILike, In, Like, Repository } from 'typeorm';
@@ -14,11 +15,21 @@ import { Admin } from './entities/admin.entity';
 import { GetUserDto } from './dto/get-user.dto';
 import { RetailCenter } from 'src/package/retail_center/entities/retail_center.entity';
 import { RetailCenterService } from 'src/package/retail_center/retail_center.service';
+=======
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './entities/user.entity';
+
+>>>>>>> b1194eccbd630b725b289fce1495097d0aee401a
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+<<<<<<< HEAD
     @InjectRepository(DeliveryEmployee)
     private deliveryEmployeeRepo: Repository<DeliveryEmployee>,
     @InjectRepository(RetailEmployee)
@@ -84,6 +95,12 @@ export class UserService {
       default:
         throw new BadRequestException('Invalid user role');
     }
+=======
+  ) {}
+
+  create(createUserDto: CreateUserDto) {
+    return 'This action adds a new user';
+>>>>>>> b1194eccbd630b725b289fce1495097d0aee401a
   }
 
   // async findAllUsers(findOptions: GetUserDto) {
@@ -131,6 +148,7 @@ export class UserService {
     }
   }
 
+<<<<<<< HEAD
   async findAllRetailEmployees(GetUserDto: GetUserDto) {
     if (!GetUserDto.username) return await this.retailEmployeeRepo.findBy({});
     else {
@@ -147,6 +165,14 @@ export class UserService {
         user: In(users.map((user) => user.id)),
       });
     }
+=======
+  async findOneByUsername(username: string) {
+    return await this.userRepository.findOneBy({ username: username });
+  }
+
+  update(id: number, updateUserDto: UpdateUserDto) {
+    return `This action updates a #${id} user`;
+>>>>>>> b1194eccbd630b725b289fce1495097d0aee401a
   }
 
   async findAllAdmins() {

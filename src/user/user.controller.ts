@@ -6,7 +6,10 @@ import {
   Patch,
   Param,
   Delete,
+<<<<<<< HEAD
   Query,
+=======
+>>>>>>> b1194eccbd630b725b289fce1495097d0aee401a
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';

@@ -57,6 +57,11 @@ export class PackageController {
     // return this.packageService.findOne(+id);
   }
 
+  @Get(':id/locations')
+  findOneLocations(@Param('id') id: string) {
+    // return this.packageService.findOne(+id);
+  }
+
   @Patch(':id')
   update(@Param('id') id: number, @Body() updatePackageDto: UpdatePackageDto) {
     console.log(updatePackageDto);
