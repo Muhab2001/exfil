@@ -26,7 +26,7 @@ import { DataSource } from 'typeorm';
       database: 'db/database.sqlite',
       synchronize: true,
       autoLoadEntities: true,
-      logging: ['error', 'schema', 'query'],
+      logging: ['error', 'schema'],
       subscribers: ['dist/**/**/**/*.subscriber{.ts,.js}'],
     }),
     ConfigModule.forRoot({

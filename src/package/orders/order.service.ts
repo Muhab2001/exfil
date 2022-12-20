@@ -149,7 +149,7 @@ export class OrderService {
     const payment = this.paymentsRepo.create({
       amount: CreateOrderDto.payment,
       issue_date: new Date().toLocaleString(),
-      fulfilled: CreateOrderDto.payment === 0 ? 1 : 0,
+      fulfilled: 0,
       customer: sender,
     });
 
