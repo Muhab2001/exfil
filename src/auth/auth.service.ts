@@ -31,10 +31,19 @@ export class AuthService {
       id: user.id,
       role: user.role,
     };
+<<<<<<< HEAD
+    console.log('INSIDE LOGIN', user);
+
+=======
+>>>>>>> b1194eccbd630b725b289fce1495097d0aee401a
     return {
       access_token: this.jwtService.sign(payload),
       role: user.role,
       username: user.username,
+<<<<<<< HEAD
+      id: user.id,
+=======
+>>>>>>> b1194eccbd630b725b289fce1495097d0aee401a
     };
   }
 }

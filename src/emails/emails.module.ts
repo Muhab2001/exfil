@@ -22,11 +22,11 @@ import { ConfigService } from '@nestjs/config';
           },
         },
         defaults: {
-          from: `"Cortex" <${config.get('MAIL_USER')}>`,
+          from: `"Exfil" <${config.get('MAIL_USER')}>`,
         },
         preview: true,
         template: {
-          dir: join(__dirname, '../..', 'templates'),
+          dir: join(__dirname, '..', 'templates'),
           adapter: new HandlebarsAdapter(),
           options: {
             strict: true,
